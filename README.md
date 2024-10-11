@@ -50,4 +50,10 @@ Windows客户端向Linux服务端发送中文Linux服务器端会显示乱码
 
 ![image-20241011215030536](./Scoket.assets/image-20241011215030536.png)
 
+### 参考
+
+```c++
+https://www.bilibili.com/video/BV1G9xWeLEjX
+```
+
 # End
