@@ -1,13 +1,13 @@
 #include <iostream>
 #include <string>
-#include <winsock2.h>  // Windows socketÍ·ÎÄ¼ş
-#include <ws2tcpip.h>  // Windows socketÏà¹ØTCPIP Í·ÎÄ¼ş
+#include <winsock2.h>  // Windows socketå¤´æ–‡ä»¶
+#include <ws2tcpip.h>  // Windows socketç›¸å…³TCPIP å¤´æ–‡ä»¶
 
-#pragma comment(lib£¬"Ws2_32.lib")  // Á´½ÓWs2_32.lib¿â
+#pragma comment(libï¼Œ"Ws2_32.lib")  // é“¾æ¥Ws2_32.libåº“
 
-#define PORT 9010  //¶¨Òå¶Ë¿ÚºÅ
-#define BUFFER_SIZE 1024  // ¶¨Òå»º³åÇø´óĞ¡
-#define IP "10.140.32.106"  // ¶¨Òå·şÎñÆ÷IPµØÖ·£¬×¢ÒâĞèÒª¼ÓÉÏË«ÒıºÅ
+#define PORT 9010  //å®šä¹‰ç«¯å£å·
+#define BUFFER_SIZE 1024  // å®šä¹‰ç¼“å†²åŒºå¤§å°
+#define IP "xxx.xxx.xxx.xxx"  // å®šä¹‰æœåŠ¡å™¨IPåœ°å€ï¼Œæ³¨æ„éœ€è¦åŠ ä¸ŠåŒå¼•å·
 
 
 int main() {
@@ -15,16 +15,16 @@ int main() {
 	SOCKET sockfd;
 	char buffer[BUFFER_SIZE];
 	struct sockaddr_in server_addr;
-	socklen_t addr_len = sizeof(server_addr);  // µØÖ·³¤¶È²ÎÊı
+	socklen_t addr_len = sizeof(server_addr);  // åœ°å€é•¿åº¦å‚æ•°
 
-	// ³õÊ¼»¯winsock
+	// åˆå§‹åŒ–winsock
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
 		std::cerr << "WSAStartup failed." << std::endl;
 		WSACleanup();
 		return 1;
 	}
 
-	// ´´½¨TCP Socket
+	// åˆ›å»ºTCP Socket
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == INVALID_SOCKET) {
 		std::cerr << "Socket creation failed:" << WSAGetLastError() << std::endl;
@@ -32,12 +32,12 @@ int main() {
 		return 1;
 	}
 
-	// ÅäÖÃ·şÎñÆ÷µØÖ·
+	// é…ç½®æœåŠ¡å™¨åœ°å€
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT);
 
-	// Ê¹ÓÃinet_pton½«IPµØÖ·´Ó×Ö·û´®×ª»»ÎªÍøÂç×Ö½ÚË³Ğò
+	// ä½¿ç”¨inet_ptonå°†IPåœ°å€ä»å­—ç¬¦ä¸²è½¬æ¢ä¸ºç½‘ç»œå­—èŠ‚é¡ºåº
 	if (inet_pton(AF_INET, IP, &server_addr.sin_addr) <= 0) {
 		std::cerr << "Invalid address or Address not supported" << std::endl;
 		closesocket(sockfd);
@@ -45,22 +45,22 @@ int main() {
 		return 1;
 	}
 	
-	// Óë·şÎñÆ÷½¨Á¢Á¬½Ó
+	// ä¸æœåŠ¡å™¨å»ºç«‹è¿æ¥
     if (connect(sockfd, (sockaddr*)&server_addr, addr_len) == SOCKET_ERROR)
     {
-        std::cerr << "Á¬½Óµ½·şÎñÆ÷¶ËÊ§°Ü" << std::endl;
+        std::cerr << "è¿æ¥åˆ°æœåŠ¡å™¨ç«¯å¤±è´¥" << std::endl;
         closesocket(clientsocket);
         WSACleanup();
         return 1;
     }
 
 	while (true) {
-		// ·¢ËÍÏûÏ¢µ½·şÎñÆ÷
+		// å‘é€æ¶ˆæ¯åˆ°æœåŠ¡å™¨
 		std::string message;
 		std::cout << "Enter message: ";
 		std::getline(std::cin, message);
 
-		// ·¢ËÍÏûÏ¢
+		// å‘é€æ¶ˆæ¯
 		int send_result = send(sockfd, message.c_str(), message.size(), 0);
 		if (send_result == SOCKET_ERROR) {
 			std::cerr << "send failed:" << WSAGetLastError() << std::endl;
@@ -73,21 +73,21 @@ int main() {
             break;
         }
 
-		// ½ÓÊÕ·şÎñÆ÷µÄÏìÓ¦
+		// æ¥æ”¶æœåŠ¡å™¨çš„å“åº”
 		int n = recv(sockfd, buffer, BUFFER_SIZE, 0);
 		if (n == SOCKET_ERROR) {
 			std::cerr << "recv failed: " << WSAGetLastError() << std::endl;
 			break;
 		}
 
-		buffer[n] = '\0';  // Ìí¼Ó×Ö·û´®½áÊø·û
-		std::cout << "Server: " << buffer << std::endl;  // Êä³ö·şÎñÆ÷ÏìÓ¦
+		buffer[n] = '\0';  // æ·»åŠ å­—ç¬¦ä¸²ç»“æŸç¬¦
+		std::cout << "Server: " << buffer << std::endl;  // è¾“å‡ºæœåŠ¡å™¨å“åº”
 	}
 
-	// ¹Ø±Õsocket
+	// å…³é—­socket
 	closesocket(sockfd);
 
-	// ÇåÀíwinsock
+	// æ¸…ç†winsock
 	WSACleanup();
 
 	return 0;
