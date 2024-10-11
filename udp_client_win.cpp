@@ -7,7 +7,7 @@
 
 #define PORT 9020  //定义端口号
 #define BUFFER_SIZE 1024  // 定义缓冲区大小
-#define IP "xxx.xxx.xxx.xxx"  // 定义服务器IP地址，注意需要加上双引号
+#define IP "10.140.32.106"  // 定义服务器IP地址，注意需要加上双引号
 
 
 int main() {
@@ -51,18 +51,18 @@ int main() {
 		std::string message;
 		std::cout << "Enter message: ";
 		std::getline(std::cin, message);
-		
+
 		// Check if the user wants to quit
-        if (message == "quit")
-        {
-            break;
-        }
+		if (message == "quit")
+		{
+			break;
+		}
 
 		// 发送消息
 		int send_result = sendto(sockfd, message.c_str(), message.size(), 0, (const struct sockaddr*)&server_addr, addr_len);
 		if (send_result == SOCKET_ERROR) {
 			std::cerr << "sendto failed:" << WSAGetLastError() << std::endl;
-			closesocket(clientsocket);
+			closesocket(sockfd);
 			WSACleanup();
 			break;
 		}
@@ -71,7 +71,7 @@ int main() {
 		int n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&server_addr, &addr_len);
 		if (n == SOCKET_ERROR) {
 			std::cerr << "recvfrom failed: " << WSAGetLastError() << std::endl;
-			closesocket(clientsocket);
+			closesocket(sockfd);
 			WSACleanup();
 			break;
 		}
