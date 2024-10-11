@@ -1,35 +1,35 @@
 #include <iostream>
 #include <string>
-#include <cstring>  // Ê¹ÓÃstrerrorº¯Êı
-#include <sys/socket.h>  // Linux socketÍ·ÎÄ¼ş
-#include <arpa/inet.h>  // µØÖ·Ïà¹Ø sockaddr_in and inet_ntoa
-#include <unistd.h>  // closeº¯Êı
+#include <cstring>  // ä½¿ç”¨strerrorå‡½æ•°
+#include <sys/socket.h>  // Linux socketå¤´æ–‡ä»¶
+#include <arpa/inet.h>  // åœ°å€ç›¸å…³ sockaddr_in and inet_ntoa
+#include <unistd.h>  // closeå‡½æ•°
 
 
-#define PORT 9020  // ¶¨Òå¶Ë¿ÚºÅ
-#define BUFFER_SIZE 1024  // ¶¨Òå»º³åÇø´óĞ¡
-#define IP "10.140.32.106"  // ¶¨Òå·şÎñÆ÷IPµØÖ·
+#define PORT 9020  // å®šä¹‰ç«¯å£å·
+#define BUFFER_SIZE 1024  // å®šä¹‰ç¼“å†²åŒºå¤§å°
+#define IP "xxx.xxx.xxx.xxx"  // å®šä¹‰æœåŠ¡å™¨IPåœ°å€
 
 
 int main() {
 	int sockfd;
 	char buffer[BUFFER_SIZE];
 	struct sockaddr_in server_addr;
-	socklen_t addr_len = sizeof(server_addr);  // µØÖ·³¤¶È²ÎÊı
+	socklen_t addr_len = sizeof(server_addr);  // åœ°å€é•¿åº¦å‚æ•°
 	
-	// ´´½¨UDP Socket
+	// åˆ›å»ºUDP Socket
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sockfd < 0 ){
 		std::cerr << "Socket creation failed: " << strerror(errno) << std::endl;
 		return 1;
 	}
 	
-	// ÅäÖÃ·şÎñÆ÷µØÖ·
+	// é…ç½®æœåŠ¡å™¨åœ°å€
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT);
 	
-	// Ê¹ÓÃinetpton½«IPµØÖ·´Ó×Ö·û´®×ª»»ÎªÍøÂç×Ö½ÚË³Ğò
+	// ä½¿ç”¨inetptonå°†IPåœ°å€ä»å­—ç¬¦ä¸²è½¬æ¢ä¸ºç½‘ç»œå­—èŠ‚é¡ºåº
 	if (inet_pton(AF_INET, IP, &server_addr.sin_addr) <= 0) {
 		std::cerr << "Invalid address or Address not supported" << std::endl;
 		close(sockfd);
@@ -37,7 +37,7 @@ int main() {
 	}
 	
 	while(true) {
-		// ·¢ËÍÏûÏ¢µ½·şÎñÆ÷
+		// å‘é€æ¶ˆæ¯åˆ°æœåŠ¡å™¨
 		std::string message;
 		std::cout << "Enter message: ";
 		std::getline(std::cin, message);
@@ -48,25 +48,25 @@ int main() {
             break;
         }
 		
-		// ·¢ËÍÏûÏ¢
+		// å‘é€æ¶ˆæ¯
 		int send_result = sendto(sockfd, message.c_str(), message.size(), 0, (const struct sockaddr*)&server_addr, addr_len);
 		if (send_result < 0){
 			std::cerr << "sendto failed: " << strerror(errno) << std::endl;
 			break;
 		}
 		
-		// ½ÓÊÕ·şÎñÆ÷µÄÏìÓ¦
+		// æ¥æ”¶æœåŠ¡å™¨çš„å“åº”
 		int n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&server_addr, &addr_len);
 		if(n<0){
 			std::cerr << "recvfrom failed:"  << strerror(errno) << std::endl;
 			break;
 		}
 		
-		buffer[n]='\0';  // Ìí¼Ó×Ö·û´®½áÊø·û
-		std::cout <<"server:"<< buffer << std::endl;  // Êä³ö·şÎñÆ÷ÏìÓ¦
+		buffer[n]='\0';  // æ·»åŠ å­—ç¬¦ä¸²ç»“æŸç¬¦
+		std::cout <<"server:"<< buffer << std::endl;  // è¾“å‡ºæœåŠ¡å™¨å“åº”
 	}
 	
-	//¹Ø±Õsocket
+	//å…³é—­socket
 	close(sockfd);
 	
 	return 0;
